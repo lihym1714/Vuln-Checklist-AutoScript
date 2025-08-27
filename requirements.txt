@@ -1,0 +1,6 @@
+certifi
+colorama
+dnspython
+futures
+requests
+urllib3
