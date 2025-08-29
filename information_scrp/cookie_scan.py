@@ -27,6 +27,10 @@ from typing import List, Dict, Tuple
 
 import requests
 
+GREEN = "\033[32m"
+RED = "\033[31m"
+RESET = "\033[0m"
+
 MFA_KEYWORDS = [
     "mfa", "2fa", "otp", "authenticator", "verification code", "2-step", "2factor"
 ]
@@ -139,8 +143,8 @@ def main(argv: List[str]) -> int:
         print(f"[+] 대상: {url}")
         print(f"[+] 쿠키 발견: {len(cookies)}개")
         for c in cookies:
-            print(f"- {c['cookie']} (domain={c['domain']}, secure={c['secure']}, httponly={c['httponly']}, samesite={c['samesite']})")
-        print(f"[+] MFA 적용 추정: {'예' if mfa else '미검출'}")
+            print(f"{GREEN}- {c['cookie']} (domain={c['domain']}, secure={c['secure']}, httponly={c['httponly']}, samesite={c['samesite']}){RESET}")
+        print(f"[+] MFA 적용 추정: {f'{GREEN}검출{RESET}' if mfa else f'{RED}미검출{RESET}'}")
 
         if args.output:
             save_json(args.output, cookies, mfa)
