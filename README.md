@@ -21,3 +21,39 @@ It automates or streamlines repetitive and manual tasks during the testing proce
 By leveraging this tool, testers can focus on strategic security analysis and vulnerability mitigation, ultimately improving both the quality and efficiency of security assessments.
 
 ---
+
+# 사용법
+```vi vclas.sh```
+vi를 통해 vclas.sh 편집모드에 진입합니다.
+```
+base_url="http://example.com/"  # Change to target base URL
+domain="example.com"  # Change to target Domain
+```
+base_url 과 domain의 값을 대상으로 변경합니다.
+```./vclas.sh```
+명령어를 통해 Shell을 실행합니다.
+
+# Usage
+```vi vclas.sh```
+Enter vclas.sh edit mode via vi.
+```
+base_url="http://example.com/"  # Change to target base URL
+domain="example.com"  # Change to target Domain
+```
+Change the base_url and domain values to target.
+```./vclas.sh```
+Run Shell using the above command.
+
+---
+
+# 설치
+`Vuln-Checklist-AutoScript` 를 성공적으로 사용하기 위해서는 **python3**가 필요합니다. 다음 명령을 실행하여 설치하세요.
+```
+git clone https://github.com/lihym1714/Vuln-Checklist-AutoScript.git
+```
+
+# Installation
+`Vuln-Checklist-AutoScript` requires **python3** to use successfull. Run the following command to install.
+```
+git clone https://github.com/lihym1714/Vuln-Checklist-AutoScript.git
+```
