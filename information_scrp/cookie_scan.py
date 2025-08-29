@@ -116,14 +116,14 @@ def save_csv(path: str, cookies: List[Dict], mfa: bool):
 
 
 def parse_args(argv: List[str]):
-    p = argparse.ArgumentParser(description="쿠키 속성 + MFA 감지 스캐너")
-    p.add_argument("url", help="대상 URL (예: https://example.com/login)")
-    p.add_argument("--timeout", type=float, default=5.0, help="요청 타임아웃 (초)")
+    p = argparse.ArgumentParser(description="Cookie Properties + MFA Detection Scanner")
+    p.add_argument("url", help="Target URL (ex: https://example.com/login)")
+    p.add_argument("--timeout", type=float, default=5.0, help="Request timeout (seconds)")
 
     out = p.add_mutually_exclusive_group()
-    out.add_argument("--json", action="store_true", help="JSON으로 결과 출력")
-    out.add_argument("--csv", action="store_true", help="CSV로 결과 출력")
-    p.add_argument("-o", "--output", help="출력 파일 경로")
+    out.add_argument("--json", action="store_true", help="Output results as JSON")
+    out.add_argument("--csv", action="store_true", help="Output results as CSV")
+    p.add_argument("-o", "--output", help="Output file path")
     return p.parse_args(argv)
 
 
@@ -141,17 +141,17 @@ def main(argv: List[str]) -> int:
         if args.output:
             save_csv(args.output, cookies, mfa)
         else:
-            print("[+] CSV 출력은 --output 필요")
+            print("[+] CSV output requires --output option.")
     else:
-        print(f"[+] 대상: {url}")
-        print(f"[+] 쿠키 발견: {len(cookies)}개")
+        print(f"[+] Target: {url}")
+        print(f"[+] Cookies found: {len(cookies)}")
         for c in cookies:
             print(f"{GREEN}- {c['cookie']} (domain={c['domain']}, secure={c['secure']}, httponly={c['httponly']}, samesite={c['samesite']}){RESET}")
-        print(f"[+] MFA 적용 추정: {f'{GREEN}검출{RESET}' if mfa else f'{RED}미검출{RESET}'}")
+        print(f"[+] Estimated MFA: {f'{GREEN}Detected{RESET}' if mfa else f'{RED}Not Detected{RESET}'}")
 
         if args.output:
             save_json(args.output, cookies, mfa)
-            print(f"[+] JSON 저장 완료: {args.output}")
+            print(f"[+] JSON saved: {args.output}")
 
     return 0
 
@@ -160,5 +160,5 @@ if __name__ == "__main__":
     try:
         sys.exit(main(sys.argv[1:]))
     except KeyboardInterrupt:
-        print("\n[-] 사용자 중단")
+        print("\n[-] User interrupted")
         sys.exit(130)

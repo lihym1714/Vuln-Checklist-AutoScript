@@ -30,7 +30,7 @@ def get_ip_addr():
     text = sysMsg[1].split("Non-authoritative answer:")[1]
     addresses = re.findall(r"Address:\s+([\d\.]+)", text)
 
-    print(f"발견된 IP 주소 {addresses}")
+    print(f"Found IP addresses: {addresses}")
     return addresses
 
 def main():
@@ -63,4 +63,4 @@ if __name__ == "__main__":
     try:    
         main()
     except Exception as e:
-        print(f"[-] Error domain을 찾을 수 없습니다. {e}")
+        print(f"[-] Error: can not find domain. {e}")

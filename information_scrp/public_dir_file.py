@@ -28,6 +28,6 @@ def main(base_url, paths=dir_paths):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("사용법: python public_dir_file.py <http|https://example.com/> <선택:dir_paths>")
+        print("Usage: python public_dir_file.py <http|https://example.com/> <optional:dir_paths>")
         sys.exit(1)
     main(sys.argv[1])
