@@ -51,9 +51,41 @@ Run Shell using the above command.
 ```
 git clone https://github.com/lihym1714/Vuln-Checklist-AutoScript.git
 ```
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+가상 환경을 구성해 패키지간 충돌이 발생하지 않도록 합니다.
+```pip install -r requirements.txt```
+실행에 필요한 써드파티 모듈을 설치해줍니다.
+
+
+다음으로 툴의 구성 요소인 subfinder와 httpx를 설치해야합니다.
+subfinder와 httpx를 성공적으로 설치하기 위해서는 go1.24가 필요합니다. 다음 명령을 실행하여 설치하세요.
+```
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+```
+go 다운로드 -> <https://go.dev/dl/>
 
 # Installation
 `Vuln-Checklist-AutoScript` requires **python3** to use successfull. Run the following command to install.
 ```
 git clone https://github.com/lihym1714/Vuln-Checklist-AutoScript.git
 ```
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+Configure the virtual environment to prevent conflicts between packages.
+```pip install -r requirements.txt```
+Installs the third-party modules required for execution.
+
+
+Next, you need to install subfinder and httpx, which are components of the tool.
+You need go1.24 to install subfinder and httpx successfully. Run the following command to install.
+```
+go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+```
+Download go -> <https://go.dev/dl/>
