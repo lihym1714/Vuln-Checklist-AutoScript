@@ -1,7 +1,5 @@
-#!/bin/bash
-
-base_url="http://minpeter.uk/"  # 대상 base URL로 변경
-domain="minpeter.uk"  # 대상 Domain로 변경
+base_url="http://example.com/"  # Change to target base URL
+domain="example.com"  # Change to target Domain
 
 echo "========================================== Subdomain Scan =========================================="
 echo $domain | subfinder -silent | httpx -silent -probe -title -status-code
