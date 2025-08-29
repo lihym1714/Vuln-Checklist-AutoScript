@@ -17,6 +17,7 @@ cookie_mfa_scanner.py — 웹 애플리케이션의 보안 속성 수집기
 
 주의: 본인 소유/허가된 시스템에서만 사용하세요.
 """
+import urllib3
 import argparse
 import csv
 import json
@@ -24,6 +25,8 @@ import sys
 import urllib.parse
 from http.cookies import SimpleCookie
 from typing import List, Dict, Tuple
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import requests
 
