@@ -1,6 +1,6 @@
 import subprocess
 
-TARGET = "naver.com"
+TARGET = "example.com"
 
 sysMsg = subprocess.getstatusoutput(f"nslookup {TARGET}")
 print(sysMsg[1])
