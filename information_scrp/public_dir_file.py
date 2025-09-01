@@ -7,7 +7,14 @@ RED = "\033[31m"
 RESET = "\033[0m"
 
 dir_paths = [
-    'robots.txt', '.htaccess', 'admin/', 'login/', 'config.php', 'backup/', 'old/', 'test/', 'dev/', 'api/', 'private/', 'tmp/', 'data/', 'uploads/', 'files/', 'images/', 'css/', 'js/', '.git/', '.svn/', 'README.md', 'LICENSE', 'index.php', 'index.html'
+    'robots.txt', '.htaccess', 'admin/', 'login/', 'config.php', 'backup/', 'old/', 'test/', 'dev/', 'api/', 'private/', 'tmp/', 'data/', 
+    'uploads/', 'files/', 'images/', 'css/', 'js/', '.git/', '.svn/', 'README.md', 'LICENSE', 'index.php', 'index.html', '/etc/passwd', 
+    '/.env', 'wp-admin/', 'wp-login.php', 'xmlrpc.php', 'sitemap.xml', 'admin.php', 'user.php', 'dashboard/', 'setup/', 'install/', 
+    'cgi-bin/', 'shell.php', 'phpinfo.php', 'info.php', 'db_backup/', 'database/', 'dump.sql', 'backup.sql', 'config.json', 'config.yaml', 
+    'config.yml', 'settings.py', 'appsettings.json', 'web.config', 'package.json', 'composer.json', '.htpasswd', '.DS_Store', 'Thumbs.db',
+    'etc/hosts', 'etc/shadow', 'var/log/', 'logs/', 'error.log', 'access.log', 'debug.log', 'mail/', 'inbox/', 'outbox/', 'archive/', 'oldsite/', 
+    'newsite/', 'staging/', 'beta/', 'test.php', 'dev.php', 'temp/', 'temporary/', 'cache/', 'static/', 'media/', 'etc/nginx/', 'etc/apache2/', 
+    'var/www/', 'srv/www/', 'home/user/', 'home/admin/', 'users/', 'admins/', 'members/', 'profiles/', 'account/', 'accounts/', 'auth/',
 ]
 
 def main(base_url, paths=dir_paths):
