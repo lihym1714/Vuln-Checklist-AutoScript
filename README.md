@@ -26,10 +26,9 @@ By leveraging this tool, testers can focus on strategic security analysis and vu
 ```vi vclas.sh```
 vi를 통해 vclas.sh 편집모드에 진입합니다.
 ```
-base_url="http://example.com/"  # Change to target base URL
 domain="example.com"  # Change to target Domain
 ```
-base_url 과 domain의 값을 대상으로 변경합니다.
+domain의 값을 대상으로 변경합니다.
 ```./vclas.sh```
 명령어를 통해 Shell을 실행합니다.
 
@@ -37,10 +36,9 @@ base_url 과 domain의 값을 대상으로 변경합니다.
 ```vi vclas.sh```
 Enter vclas.sh edit mode via vi.
 ```
-base_url="http://example.com/"  # Change to target base URL
 domain="example.com"  # Change to target Domain
 ```
-Change the base_url and domain values to target.
+Change the domain values to target.
 ```./vclas.sh```
 Run Shell using the above command.
 
