@@ -30,7 +30,7 @@ def main(base_url, paths=dir_paths):
             else:
                 results.append(f"[+] {path}:\tResponse code {response.status_code}")
         except requests.RequestException as e:
-            results.append(f"[-] {path}: Request Failed ({e})")
+            results.append(f"[-] {path}: Request Failed")
     print("\n".join(results))
 
 if __name__ == "__main__":
