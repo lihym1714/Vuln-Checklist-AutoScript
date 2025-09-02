@@ -8,5 +8,4 @@ echo "========================================== Process Start =================
 echo "========================================== Subdomain Scan =========================================="
 python information_scrp/subdomain_scan.py "$domain"
 
-echo "========================================== Dir/File Scan =========================================="
 python main.py "$sub_domain_path"
