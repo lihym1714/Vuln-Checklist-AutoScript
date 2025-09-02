@@ -1,14 +1,12 @@
-base_url="http://example.com/"  # Change to target base URL
-domain="example.com"  # Change to target Domain
+domain="everspin.global"  # Change to target Domain without Second Level Domain
 
+sub_domain_path="data/subdomains.txt"  # Subdomain wordlist path - Fixed
+
+mkdir -p "data/"
+
+echo "========================================== Process Start =========================================="
 echo "========================================== Subdomain Scan =========================================="
-echo $domain | subfinder -silent | httpx -silent -probe -title -status-code
+python information_scrp/subdomain_scan.py "$domain"
 
 echo "========================================== Dir/File Scan =========================================="
-python information_scrp/public_dir_file.py "$base_url"
-
-echo "========================================== Port Scan =========================================="
-python information_scrp/port_scan.py "$domain"
-
-echo "========================================== Cookie/MFA Scan =========================================="
-python information_scrp/cookie_scan.py "$base_url"
+python main.py "$sub_domain_path"
