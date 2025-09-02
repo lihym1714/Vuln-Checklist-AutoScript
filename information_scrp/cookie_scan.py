@@ -57,17 +57,46 @@ def analyze_cookies(set_cookie_headers: List[str], host: str) -> List[Dict]:
         header_str = safe_to_str(header)
         sc = SimpleCookie()
         sc.load(header_str)
+
         for name, morsel in sc.items():
-            results.append({
+            # 기본 정보
+            cookie_info = {
                 "cookie": name,
                 "domain": morsel["domain"] or host,
                 "path": morsel["path"] or "/",
-                "secure": "secure" in header_str.lower(),
-                "httponly": "httponly" in header_str.lower(),
-                "samesite": morsel["samesite"] or ("samesite" in header_str.lower() and header_str.split("SameSite=")[-1].split(";")[0]),
+                "secure": False,
+                "httponly": False,
+                "samesite": None,
                 "expires": morsel["expires"] or None,
-            })
+                "max-age": None,
+                "partitioned": False,
+            }
+
+            # 속성 분석 (RFC6265 기준)
+            parts = header_str.split(";")
+            for part in parts[1:]:
+                token = part.strip()
+                low = token.lower()
+                if low == "secure":
+                    cookie_info["secure"] = True
+                elif low == "httponly":
+                    cookie_info["httponly"] = True
+                elif low.startswith("samesite"):
+                    cookie_info["samesite"] = token.split("=", 1)[-1].strip()
+                elif low.startswith("expires"):
+                    cookie_info["expires"] = token.split("=", 1)[-1].strip()
+                elif low.startswith("max-age"):
+                    cookie_info["max-age"] = token.split("=", 1)[-1].strip()
+                elif low == "partitioned":
+                    cookie_info["partitioned"] = True
+                elif low.startswith("domain") and not morsel["domain"]:
+                    cookie_info["domain"] = token.split("=", 1)[-1].strip()
+                elif low.startswith("path") and not morsel["path"]:
+                    cookie_info["path"] = token.split("=", 1)[-1].strip()
+
+            results.append(cookie_info)
     return results
+
 
 
 def detect_mfa(resp: requests.Response) -> bool:
@@ -137,16 +166,28 @@ def main(argv: List[str]) -> int:
         if args.output:
             save_json(args.output, cookies, mfa)
         print(json.dumps({"cookies": cookies, "mfa_detected": mfa}, ensure_ascii=False, indent=2))
+
     elif args.csv:
         if args.output:
             save_csv(args.output, cookies, mfa)
         else:
             print("[+] CSV output requires --output option.")
+
     else:
         print(f"[+] Target: {url}")
         print(f"[+] Cookies found: {len(cookies)}")
         for c in cookies:
-            print(f"{GREEN}- {c['cookie']} (domain={c['domain']}, secure={c['secure']}, httponly={c['httponly']}, samesite={c['samesite']}){RESET}")
+            print(f"{GREEN}- {c['cookie']}{RESET}")
+            print(f"    domain      = {c['domain']}")
+            print(f"    path        = {c['path']}")
+            print(f"    secure      = {c['secure']}")
+            print(f"    httponly    = {c['httponly']}")
+            print(f"    samesite    = {c['samesite']}")
+            print(f"    expires     = {c['expires']}")
+            print(f"    max-age     = {c['max-age']}")
+            print(f"    partitioned = {c['partitioned']}")
+            print()
+
         print(f"[+] Estimated MFA: {f'{GREEN}Detected{RESET}' if mfa else f'{RED}Not Detected{RESET}'}")
 
         if args.output:
@@ -154,6 +195,7 @@ def main(argv: List[str]) -> int:
             print(f"[+] JSON saved: {args.output}")
 
     return 0
+
 
 
 if __name__ == "__main__":
