@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from information_scrp import important_search, public_dir_file, cookie_scan
+from information_scrp import important_search, major_dir_file, cookie_scan
 
 def main(Targets):
     filename = Targets
@@ -11,8 +11,8 @@ def main(Targets):
 
 def main_process(domain):
     print(f"========================================== {domain} ==========================================")
-    print("========================================== Public Directory/File Search ==========================================")
-    public_dir_file.main(domain)
+    print("========================================== Major Directory/File Search ==========================================")
+    major_dir_file.main(domain)
     # print("========================================== Important Info Search ==========================================")
     # important_search.main(domain)
     print("========================================== Port Scan ==========================================")
