@@ -89,14 +89,7 @@ def save_tree_to_txt(tree: dict, file_path: str, prefix: str = "", is_last: bool
                 _write_tree(children, new_prefix, i == len(node) - 1)
         _write_tree(tree, prefix, is_last)
 
-def main():
-    if len(sys.argv) < 2:
-        print(f"Usage : {sys.argv[0]} <start_url> [max_depth]")
-        sys.exit(1)
-
-    start_url = sys.argv[1]
-    max_depth = int(sys.argv[2]) if len(sys.argv) > 2 else 2
-
+def main(start_url: str,max_depth=100):
     tree = crawl(start_url, max_depth=max_depth)
 
     print("\n[+] Sitemap Tree (Filtered):")
@@ -107,4 +100,10 @@ def main():
         print(f"[+] Tree data has been saved to {output_file}.")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print(f"Usage : {sys.argv[0]} <start_url> [max_depth]")
+        sys.exit(1)
+
+    start_url = sys.argv[1]
+    max_depth = int(sys.argv[2]) if len(sys.argv) > 2 else 2
+    main(start_url, max_depth)
