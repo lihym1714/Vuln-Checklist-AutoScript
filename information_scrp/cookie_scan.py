@@ -4,6 +4,9 @@ import json
 import sys
 from typing import List, Dict, Tuple
 
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 import requests
 
 GREEN = "\033[32m"
