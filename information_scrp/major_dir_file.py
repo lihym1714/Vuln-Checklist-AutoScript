@@ -65,7 +65,7 @@ def main(base_url, paths=dir_paths):
             try:
                 response = requests.get(url, timeout=5)
                 if response.status_code == 200:
-                    results.append(f"{GREEN}[+] {path}:\t\tResponse exist (200 OK){RESET}")
+                    results.append(f"{GREEN}[+] {path}:\tResponse exist (200 OK){RESET}")
             except requests.RequestException as e:
                 results.append(f"{RED}[-] {path}: Request Failed{RESET}")
         if len(results) == 0:
