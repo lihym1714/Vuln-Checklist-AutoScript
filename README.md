@@ -45,7 +45,8 @@ Run Shell using the above command.
 ---
 
 # 설치
-`Vuln-Checklist-AutoScript` 를 성공적으로 사용하기 위해서는 **python3**가 필요합니다. 다음 명령을 실행하여 설치하세요.
+`Vuln-Checklist-AutoScript` 를 성공적으로 사용하기 위해서는 **python3**가 필요합니다. 
+다음 명령을 실행하여 Vuln-Checklist-AutoScript를 설치하세요.
 ```
 git clone https://github.com/lihym1714/Vuln-Checklist-AutoScript.git
 ```
@@ -67,7 +68,8 @@ go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 go 다운로드 -> <https://go.dev/dl/>
 
 # Installation
-`Vuln-Checklist-AutoScript` requires **python3** to use successfull. Run the following command to install.
+`Vuln-Checklist-AutoScript` requires **python3** to use successfull. 
+Run the following command to install Vuln-Checklist-AutoScript.
 ```
 git clone https://github.com/lihym1714/Vuln-Checklist-AutoScript.git
 ```
