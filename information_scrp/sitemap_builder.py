@@ -8,8 +8,8 @@ import urllib.parse
 import requests
 from collections import deque
 
-# 제외할 키워드 (여기에 원하는 키워드를 넣으면 해당 URL은 트리에 포함되지 않음)
-EXCLUDE_KEYWORDS = ["github", "linkedin", "facebook", "twitter", "instagram", "youtube", "javascript:", "google"]
+# 제외할 키워드
+EXCLUDE_KEYWORDS = []   #["github", "linkedin", "facebook", "twitter", "instagram", "youtube", "javascript:", "google"]
 
 URL_PATTERN = re.compile(r'href=["\'](.*?)["\']', re.IGNORECASE)
 

@@ -2,6 +2,7 @@ import subprocess
 import sys
 
 def main(Target):
+    print("========================================== Subdomain Scan ==========================================")
     domains = []
     sysMsg = subprocess.getstatusoutput(f"echo {Target} | subfinder -silent | httpx -silent -probe -title -status-code")
     domains.append(f"https://{Target}/")
