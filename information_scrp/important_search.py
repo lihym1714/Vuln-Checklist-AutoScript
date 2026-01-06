@@ -25,6 +25,7 @@ def check_headers(resp):
 
 # 바디 검사
 def main(url):
+    print("[*] Checking important information for", url)
     try:
         if not url.startswith("http://") and not url.startswith("https://"):
             url = "http://" + url  # 기본적으로 http로 시작

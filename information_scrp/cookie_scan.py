@@ -102,6 +102,8 @@ def main(argv: List[str]) -> int:
     args = parse_args(argv)
     url = args.url
 
+    print("[*] Checking Cookie & MFA for", url)
+
     cookies, mfa = scan_url(url, timeout=args.timeout)
 
     if args.json:

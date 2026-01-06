@@ -9,8 +9,8 @@ RESET = "\033[0m"
 admin_paths = [
     'admin/', 'administrator/', 'admin.php', 'admin.html', 'admin/login.php', 'admin/index.php', 'admin/dashboard.php', 'adminpanel/', 
     'admin_area/', 'admin_login/', 'adminsite/', 'adminconsole/', 'adminportal/', 'cpanel/', 'controlpanel/', 'manage/', 'management/', 
-    'moderator/', 'mod/', 'superadmin/', 'root/', 'sysadmin/', 'systemadmin/', 'admin123/', 'admin2023/', 'admin2024/', 'admin_test/', 
-    'admin_test.php',
+    'moderator/', 'mod/', 'superadmin/', 'root/', 'sysadmin/', 'systemadmin/', 'admin123/', 'admin2023/', 'admin2024/','admin2025/','admin2026/', 
+    'admin_test/', 'admin_test.php',
     'wp-admin/', 'wp-login.php', 'login/', 'auth/', 'account/', 'accounts/', 'admins/',
 ]
 

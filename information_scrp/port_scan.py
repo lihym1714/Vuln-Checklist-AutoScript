@@ -34,7 +34,7 @@ def get_ip_addr():
     return addresses
 
 def main():
-    print("[*] Port Scanning Start ... 1 ~ 1024")
+    print("[*] Port Scanning Start ... 1 ~ 1024 ports for", TARGET)
 
     ip_addrs = get_ip_addr()
 
