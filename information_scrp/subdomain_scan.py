@@ -1,14 +1,22 @@
 import subprocess
 import sys
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from logging_utils import info, error
+
 
 def main(Target):
-    print("[*] Subdomain Scan for", Target)
+    info(f"Subdomain Scan for {Target}")
     domains = []
     sysMsg = subprocess.getstatusoutput(f"echo {Target} | subfinder -silent | httpx -silent -probe -title -status-code")
     domains.append(f"https://{Target}/")
     domains.append(f"http://{Target}/")
     if len(sysMsg[1]) == 0:
-        print("[-] No subdomains found.")
+        error("No subdomains found.", colored=False)
     else:
         for i in sysMsg[1].split("\n"):
             print(i)

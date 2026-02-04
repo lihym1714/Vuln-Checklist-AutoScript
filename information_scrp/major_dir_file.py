@@ -1,10 +1,13 @@
 import requests
 import sys
+from pathlib import Path
 from urllib.parse import urljoin
 
-GREEN = "\033[32m"
-RED = "\033[31m"
-RESET = "\033[0m"
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from logging_utils import info, success, error, GREEN, RED, RESET
 
 admin_paths = [
     'admin/', 'administrator/', 'admin.php', 'admin.html', 'admin/login.php', 'admin/index.php', 'admin/dashboard.php', 'adminpanel/', 
@@ -55,10 +58,10 @@ dir_paths = {"admin":admin_paths, "site_map":site_map_paths, "server":server_pat
 
 
 def main(base_url, paths=dir_paths):
-    print(f"[*] Base Url: {base_url}")
-    print(f"[*] {base_url} Information scrapping start.")
+    info(f"Base Url: {base_url}")
+    info(f"{base_url} Information scrapping start.")
     for category, path_list in paths.items():
-        print(f"[*] Checking paths in category '{category}' with {len(path_list)} entries...")
+        info(f"Checking paths in category '{category}' with {len(path_list)} entries...")
         results = []
         for path in path_list:
             url = urljoin(base_url, path)
@@ -69,7 +72,7 @@ def main(base_url, paths=dir_paths):
             except requests.RequestException as e:
                 results.append(f"{RED}[-] {path}: Request Failed{RESET}")
         if len(results) == 0:
-            print(f"{RED}[-] No interesting directories or files found.{RESET}")
+            error("No interesting directories or files found.")
         else:
             print("\n".join(results))
 

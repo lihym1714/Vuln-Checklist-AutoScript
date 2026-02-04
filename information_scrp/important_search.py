@@ -1,10 +1,18 @@
 import re
-import requests
 import sys
+from pathlib import Path
+from typing import Dict, List
+
+import requests
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from logging_utils import info, success, error
 
 
-# 패턴 정의 (정규식 기반)
-patterns = {
+PATTERNS: Dict[str, str] = {
     "Email": r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}",
     "AWS Key": r"AKIA[0-9A-Z]{16}",
     "JWT Token": r"eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9._-]{10,}\.[a-zA-Z0-9._-]{10,}",
@@ -12,37 +20,57 @@ patterns = {
     "Error Message": r"(Exception|Traceback|SQL syntax|ORA-\d+|Warning:)"
 }
 
+REQUEST_TIMEOUT: int = 10
+MAX_MATCHES_DISPLAY: int = 3
+
 
 # 헤더 확인
-def check_headers(resp):
+def check_headers(resp: requests.Response) -> None:
     for key, value in resp.headers.items():
         if "server" in key.lower() or "powered" in key.lower():
-            print(f"[+] Header Info: {key}: {value}")
+            success(f"Header Info: {key}: {value}")
             # 버전 정보 추출
             version = re.findall(r"\d+\.\d+(\.\d+)?", value)
             if version:
-                print(f"[+] {key} Version Info: {', '.join(version)}")
+                success(f"{key} Version Info: {', '.join(version)}")
+
+
+def normalize_url(url: str) -> str:
+    if not url.startswith("http://") and not url.startswith("https://"):
+        return f"http://{url}"
+    return url
+
 
 # 바디 검사
-def main(url):
-    print("[*] Checking important information for", url)
+def main(url: str) -> None:
+    normalized_url = normalize_url(url)
+    info(f"Checking important information for {normalized_url}")
+
     try:
-        if not url.startswith("http://") and not url.startswith("https://"):
-            url = "http://" + url  # 기본적으로 http로 시작
-    except Exception as e:
-        print(f"[-] Error processing URL: {e}")
-        return
-    try:
-        resp = requests.get(url)
-        print(f"[+] Status Code: {resp.status_code}")
+        headers = {"User-Agent": "Mozilla/5.0 (compatible; VCLAS/1.0)"}
+        resp = requests.get(normalized_url, headers=headers, timeout=REQUEST_TIMEOUT)
+        success(f"Status Code: {resp.status_code}")
+
+        if resp.status_code >= 400:
+            error(f"HTTP Error: {resp.status_code} - {resp.reason}")
+            return
+
         check_headers(resp)
         body = resp.text
-        for name, pattern in patterns.items():
-            matches = re.findall(pattern, body)
+
+        for name, pattern in PATTERNS.items():
+            matches: List[str] = re.findall(pattern, body)
             if matches:
-                print(f"[+] {name} Exposure Detected: {matches[:3]}")  # 일부만 출력
+                success(f"{name} Exposure Detected: {matches[:MAX_MATCHES_DISPLAY]}")
+
+    except requests.exceptions.Timeout:
+        error(f"Request timeout after {REQUEST_TIMEOUT}s for {normalized_url}")
+    except requests.exceptions.ConnectionError:
+        error(f"Connection failed for {normalized_url}")
+    except requests.exceptions.RequestException as e:
+        error(f"Request error for {normalized_url}: {e}")
     except Exception as e:
-        print(f"[-] Error during request: {e}")
+        error(f"Unexpected error: {e}")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

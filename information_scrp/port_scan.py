@@ -2,20 +2,23 @@ import socket
 import sys
 import subprocess
 import re
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
-GREEN = "\033[32m"
-RED = "\033[31m"
-RESET = "\033[0m"
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from logging_utils import info, success, error, GREEN, RED, RESET
 
 PORTS = range(1,1025)
 TARGET = sys.argv[1]
 
-def scan_port(port):
+def scan_port(port, target):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(0.5)
-        result = sock.connect_ex((TARGET, port))
+        result = sock.connect_ex((target, port))
         sock.close()
         if result == 0:
             return port
@@ -24,7 +27,7 @@ def scan_port(port):
     return None
 
 def get_ip_addr():
-    print(f"[*] nslookup {TARGET} ...")
+    info(f"nslookup {TARGET} ...")
     sysMsg = subprocess.getstatusoutput(f"nslookup {TARGET}")
 
     text = sysMsg[1].split("Non-authoritative answer:")[1]
@@ -34,18 +37,17 @@ def get_ip_addr():
     return addresses
 
 def main():
-    print("[*] Port Scanning Start ... 1 ~ 1024 ports for", TARGET)
+    info(f"Port Scanning Start ... 1 ~ 1024 ports for {TARGET}")
 
     ip_addrs = get_ip_addr()
 
     for i in ip_addrs:
-        print(f"[+] Scanning {i} ...")
-        
+        success(f"Scanning {i} ...")
+
         open_ports = []
-        TARGET = i
 
         with ThreadPoolExecutor(max_workers=100) as executor:
-            results = executor.map(scan_port, PORTS)
+            results = executor.map(lambda p: scan_port(p, i), PORTS)
 
         for port in results:
             if port:
@@ -54,13 +56,13 @@ def main():
         if open_ports:
             print(f"{GREEN}[+] Open ports: {open_ports}{RESET}")
         else:
-            print("[-] No open ports found.")
+            error("No open ports found.", colored=False)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("[-] Please enter target")
+        error("Please enter target", colored=False)
         sys.exit(1)
-    try:    
+    try:
         main()
     except Exception as e:
-        print(f"[-] Error: can not find domain. {e}")
+        error(f"Error: can not find domain. {e}")

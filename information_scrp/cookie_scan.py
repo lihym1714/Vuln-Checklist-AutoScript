@@ -2,6 +2,7 @@ import argparse
 import csv
 import json
 import sys
+from pathlib import Path
 from typing import List, Dict, Tuple
 
 import urllib3
@@ -9,9 +10,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import requests
 
-GREEN = "\033[32m"
-RED = "\033[31m"
-RESET = "\033[0m"
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from logging_utils import info, success, error, GREEN, RED, RESET
 
 MFA_KEYWORDS = ["mfa", "2fa", "otp", "authenticator", "verification code", "2-step", "2factor"]
 
@@ -65,7 +68,7 @@ def scan_url(url: str, timeout: float = 5.0) -> Tuple[List[Dict], bool]:
     try:
         resp = requests.get(url, timeout=timeout, allow_redirects=True, verify=False)
     except Exception as e:
-        print(f"[-] 요청 실패: {e}")
+        error(f"요청 실패: {e}")
         return [], False
 
     cookies_info = extract_all_cookies(resp)
@@ -102,7 +105,7 @@ def main(argv: List[str]) -> int:
     args = parse_args(argv)
     url = args.url
 
-    print("[*] Checking Cookie & MFA for", url)
+    info(f"Checking Cookie & MFA for {url}")
 
     cookies, mfa = scan_url(url, timeout=args.timeout)
 
@@ -114,20 +117,22 @@ def main(argv: List[str]) -> int:
         if args.output:
             save_csv(args.output, cookies, mfa)
         else:
-            print("[+] CSV output requires --output option.")
+            success("CSV output requires --output option.", colored=False)
     else:
-        print(f"\n[+] Target: {url}")
-        print(f"[+] Cookies found: {len(cookies)}")
+        print()
+        success(f"Target: {url}")
+        success(f"Cookies found: {len(cookies)}")
         for c in cookies:
             print(f"{GREEN}- {c['name']}{RESET}")
             print(f"    value       = {c['value']}")
             print(f"    raw_header  = {c['raw_header']}")
             print()
-        print(f"[+] Estimated MFA: {f'{GREEN}Detected{RESET}' if mfa else f'{RED}Not Detected{RESET}'}")
+        mfa_status = f"{GREEN}Detected{RESET}" if mfa else f"{RED}Not Detected{RESET}"
+        success(f"Estimated MFA: {mfa_status}", colored=False)
 
         if args.output:
             save_json(args.output, cookies, mfa)
-            print(f"[+] JSON saved: {args.output}")
+            success(f"JSON saved: {args.output}")
 
     return 0
 
@@ -135,5 +140,5 @@ if __name__ == "__main__":
     try:
         sys.exit(main(sys.argv[1:]))
     except KeyboardInterrupt:
-        print("\n[-] User interrupted")
+        error("User interrupted")
         sys.exit(130)

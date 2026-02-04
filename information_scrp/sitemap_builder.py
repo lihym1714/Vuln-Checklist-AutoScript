@@ -5,8 +5,16 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import re
 import sys
 import urllib.parse
+from pathlib import Path
+
 import requests
 from collections import deque
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from logging_utils import error, success
 
 # 제외할 키워드
 EXCLUDE_KEYWORDS = []   #["github", "linkedin", "facebook", "twitter", "instagram", "youtube", "javascript:", "google"]
@@ -61,7 +69,7 @@ def crawl(start_url: str, max_depth: int = 3, timeout: float = 5.0):
                 continue
             body = resp.text
         except Exception as e:
-            print(f"[-] Requests Failed: {url} ({e})")
+            error(f"Requests Failed: {url} ({e})")
             continue
 
         for new_url in extract_urls(url, body):
@@ -92,12 +100,12 @@ def save_tree_to_txt(tree: dict, file_path: str, prefix: str = "", is_last: bool
 def main(start_url: str,max_depth=100):
     tree = crawl(start_url, max_depth=max_depth)
 
-    print("\n[+] Sitemap Tree (Filtered):")
+    success("\nSitemap Tree (Filtered):", colored=False)
     print_tree(tree)
 
     if output_file:
         save_tree_to_txt(tree, output_file)
-        print(f"[+] Tree data has been saved to {output_file}.")
+        success(f"Tree data has been saved to {output_file}.")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

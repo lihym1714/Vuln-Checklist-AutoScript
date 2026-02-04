@@ -33,6 +33,24 @@ def run_port_scan(host: str) -> str:
     return (result.stderr or "").strip()
 
 
+def action_major_dir_file(url: str) -> None:
+    major_dir_file.main(url)
+
+
+def action_important_search(url: str) -> None:
+    important_search.main(url)
+
+
+def action_port_scan(url: str) -> None:
+    port_scan_output = run_port_scan(extract_host(url))
+    if port_scan_output:
+        print(port_scan_output)
+
+
+def action_cookie_scan(url: str) -> None:
+    cookie_scan.main([url])
+
+
 def main(targets_path: str) -> None:
     for target in read_targets(targets_path):
         main_process(target)
@@ -40,12 +58,10 @@ def main(targets_path: str) -> None:
 
 def main_process(target: str) -> None:
     url = normalize_url(target)
-    major_dir_file.main(url)
-    important_search.main(url)
-    port_scan_output = run_port_scan(extract_host(url))
-    if port_scan_output:
-        print(port_scan_output)
-    cookie_scan.main([url])
+    action_major_dir_file(url)
+    action_important_search(url)
+    action_port_scan(url)
+    action_cookie_scan(url)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
