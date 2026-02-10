@@ -2,6 +2,7 @@ import requests
 import sys
 from pathlib import Path
 from urllib.parse import urljoin
+from typing import Any
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -57,24 +58,63 @@ dir_paths = {"admin":admin_paths, "site_map":site_map_paths, "server":server_pat
 
 
 
-def main(base_url, paths=dir_paths):
+def scan(base_url: str, paths: dict[str, list[str]] = dir_paths, *, timeout: float = 5.0) -> dict[str, Any]:
     info(f"Base Url: {base_url}")
     info(f"{base_url} Information scrapping start.")
+
+    scan_result: dict[str, Any] = {
+        "base_url": base_url,
+        "timeout": timeout,
+        "categories": [],
+    }
+
     for category, path_list in paths.items():
         info(f"Checking paths in category '{category}' with {len(path_list)} entries...")
         results = []
+
+        category_result: dict[str, Any] = {
+            "category": category,
+            "checked": len(path_list),
+            "found": [],
+            "errors": [],
+        }
+
         for path in path_list:
             url = urljoin(base_url, path)
             try:
-                response = requests.get(url, timeout=5)
+                response = requests.get(url, timeout=timeout)
                 if response.status_code == 200:
                     results.append(f"{GREEN}[+] {path}:\tResponse exist (200 OK){RESET}")
+                    category_result["found"].append(
+                        {
+                            "path": path,
+                            "url": url,
+                            "status_code": response.status_code,
+                        }
+                    )
             except requests.RequestException as e:
                 results.append(f"{RED}[-] {path}: Request Failed{RESET}")
+
+                # Keep the error details for the dashboard report.
+                category_result["errors"].append(
+                    {
+                        "path": path,
+                        "url": url,
+                        "error": str(e),
+                    }
+                )
         if len(results) == 0:
             error("No interesting directories or files found.")
         else:
             print("\n".join(results))
+
+        scan_result["categories"].append(category_result)
+
+    return scan_result
+
+
+def main(base_url: str, paths: dict[str, list[str]] = dir_paths):
+    return scan(base_url, paths)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

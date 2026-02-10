@@ -76,6 +76,25 @@ def scan_url(url: str, timeout: float = 5.0) -> Tuple[List[Dict], bool]:
     return cookies_info, mfa
 
 
+def scan_and_render(url: str, *, timeout: float = 5.0) -> Tuple[List[Dict], bool]:
+    info(f"Checking Cookie & MFA for {url}")
+
+    cookies, mfa = scan_url(url, timeout=timeout)
+
+    print()
+    success(f"Target: {url}")
+    success(f"Cookies found: {len(cookies)}")
+    for c in cookies:
+        print(f"{GREEN}- {c['name']}{RESET}")
+        print(f"    value       = {c['value']}")
+        print(f"    raw_header  = {c['raw_header']}")
+        print()
+    mfa_status = f"{GREEN}Detected{RESET}" if mfa else f"{RED}Not Detected{RESET}"
+    success(f"Estimated MFA: {mfa_status}", colored=False)
+
+    return cookies, mfa
+
+
 def save_json(path: str, cookies: List[Dict], mfa: bool):
     with open(path, "w", encoding="utf-8") as f:
         json.dump({"cookies": cookies, "mfa_detected": mfa}, f, ensure_ascii=False, indent=2)
@@ -105,31 +124,21 @@ def main(argv: List[str]) -> int:
     args = parse_args(argv)
     url = args.url
 
-    info(f"Checking Cookie & MFA for {url}")
-
-    cookies, mfa = scan_url(url, timeout=args.timeout)
-
     if args.json:
+        info(f"Checking Cookie & MFA for {url}")
+        cookies, mfa = scan_url(url, timeout=args.timeout)
         if args.output:
             save_json(args.output, cookies, mfa)
         print(json.dumps({"cookies": cookies, "mfa_detected": mfa}, ensure_ascii=False, indent=2))
     elif args.csv:
+        info(f"Checking Cookie & MFA for {url}")
+        cookies, mfa = scan_url(url, timeout=args.timeout)
         if args.output:
             save_csv(args.output, cookies, mfa)
         else:
             success("CSV output requires --output option.", colored=False)
     else:
-        print()
-        success(f"Target: {url}")
-        success(f"Cookies found: {len(cookies)}")
-        for c in cookies:
-            print(f"{GREEN}- {c['name']}{RESET}")
-            print(f"    value       = {c['value']}")
-            print(f"    raw_header  = {c['raw_header']}")
-            print()
-        mfa_status = f"{GREEN}Detected{RESET}" if mfa else f"{RED}Not Detected{RESET}"
-        success(f"Estimated MFA: {mfa_status}", colored=False)
-
+        cookies, mfa = scan_and_render(url, timeout=args.timeout)
         if args.output:
             save_json(args.output, cookies, mfa)
             success(f"JSON saved: {args.output}")

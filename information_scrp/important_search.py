@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from typing import Dict, List
 
+from typing import Any
+
 import requests
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -24,15 +26,24 @@ REQUEST_TIMEOUT: int = 10
 MAX_MATCHES_DISPLAY: int = 3
 
 
-# 헤더 확인
-def check_headers(resp: requests.Response) -> None:
+def extract_headers_info(resp: requests.Response) -> List[Dict[str, Any]]:
+    header_infos: List[Dict[str, Any]] = []
     for key, value in resp.headers.items():
         if "server" in key.lower() or "powered" in key.lower():
-            success(f"Header Info: {key}: {value}")
+            value_str = str(value)
+            success(f"Header Info: {key}: {value_str}")
+
             # 버전 정보 추출
-            version = re.findall(r"\d+\.\d+(\.\d+)?", value)
-            if version:
-                success(f"{key} Version Info: {', '.join(version)}")
+            versions = re.findall(r"\d+\.\d+(\.\d+)?", value_str)
+            if versions:
+                success(f"{key} Version Info: {', '.join(versions)}")
+
+            header_infos.append({
+                "header": key,
+                "value": value_str,
+                "versions": versions,
+            })
+    return header_infos
 
 
 def normalize_url(url: str) -> str:
@@ -41,36 +52,64 @@ def normalize_url(url: str) -> str:
     return url
 
 
-# 바디 검사
-def main(url: str) -> None:
+def scan(url: str) -> Dict[str, Any]:
     normalized_url = normalize_url(url)
     info(f"Checking important information for {normalized_url}")
+
+    result: Dict[str, Any] = {
+        "url": normalized_url,
+        "status_code": None,
+        "header_infos": [],
+        "exposures": {},
+        "error": None,
+    }
 
     try:
         headers = {"User-Agent": "Mozilla/5.0 (compatible; VCLAS/1.0)"}
         resp = requests.get(normalized_url, headers=headers, timeout=REQUEST_TIMEOUT)
         success(f"Status Code: {resp.status_code}")
 
-        if resp.status_code >= 400:
-            error(f"HTTP Error: {resp.status_code} - {resp.reason}")
-            return
+        result["status_code"] = resp.status_code
 
-        check_headers(resp)
+        if resp.status_code >= 400:
+            msg = f"HTTP Error: {resp.status_code} - {resp.reason}"
+            error(msg)
+            result["error"] = msg
+            return result
+
+        result["header_infos"] = extract_headers_info(resp)
         body = resp.text
 
         for name, pattern in PATTERNS.items():
             matches: List[str] = re.findall(pattern, body)
             if matches:
                 success(f"{name} Exposure Detected: {matches[:MAX_MATCHES_DISPLAY]}")
+                result["exposures"][name] = matches
+
+        return result
 
     except requests.exceptions.Timeout:
-        error(f"Request timeout after {REQUEST_TIMEOUT}s for {normalized_url}")
+        msg = f"Request timeout after {REQUEST_TIMEOUT}s for {normalized_url}"
+        error(msg)
+        result["error"] = msg
     except requests.exceptions.ConnectionError:
-        error(f"Connection failed for {normalized_url}")
+        msg = f"Connection failed for {normalized_url}"
+        error(msg)
+        result["error"] = msg
     except requests.exceptions.RequestException as e:
-        error(f"Request error for {normalized_url}: {e}")
+        msg = f"Request error for {normalized_url}: {e}"
+        error(msg)
+        result["error"] = msg
     except Exception as e:
-        error(f"Unexpected error: {e}")
+        msg = f"Unexpected error: {e}"
+        error(msg)
+        result["error"] = msg
+
+    return result
+
+
+def main(url: str) -> Dict[str, Any]:
+    return scan(url)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
