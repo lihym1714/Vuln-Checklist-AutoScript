@@ -17,3 +17,11 @@ data/
 
 # OS
 .DS_Store
+
+# Test
+resume.cfg
+tests/
+
+# Others
+AGENTS.md
+docs/
